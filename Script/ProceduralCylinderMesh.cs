@@ -8,6 +8,7 @@ public class ProceduralCylinderMesh : MonoBehaviour
     [SerializeField] private float cylinderRadius = 2f;
     [SerializeField] private float cylinderHeight = -1f;
     [SerializeField] private float cylinderStep = 7.5f;
+    [SerializeField] private int cylinderBiteCount = 2;
 
     [SerializeField] private List<Vector3> vertexList = new List<Vector3>();
     private List<Vector3> vertexTopList = new List<Vector3>();
@@ -87,9 +88,13 @@ public class ProceduralCylinderMesh : MonoBehaviour
         // The (vertexTopList.Count - 1) is outer layer vertex of a cylinder excluding the last top vertex
         for (int i = 0; i < vertexTopList.Count - 1; i++)
         {
-            triangleTopList.Add(triangleTopCenterIndices);
-            triangleTopList.Add(triangleVertexIndices + 1);
-            triangleTopList.Add(triangleVertexIndices + 2);
+            if (i >= cylinderBiteCount)
+            {
+                triangleTopList.Add(triangleTopCenterIndices);
+                triangleTopList.Add(triangleVertexIndices + 1);
+                triangleTopList.Add(triangleVertexIndices + 2);
+            }
+
             triangleVertexIndices++;
         }
 
@@ -111,9 +116,13 @@ public class ProceduralCylinderMesh : MonoBehaviour
 
         for (int i = 0; i < vertexBottomList.Count - 1; i++)
         {
-            triangleBottomList.Add(triangleBottomCenterIndices);
-            triangleBottomList.Add(triangleVertexIndices + 2);
-            triangleBottomList.Add(triangleVertexIndices + 1);
+            if (i >= cylinderBiteCount)
+            {
+                triangleBottomList.Add(triangleBottomCenterIndices);
+                triangleBottomList.Add(triangleVertexIndices + 2);
+                triangleBottomList.Add(triangleVertexIndices + 1);
+            }
+
             triangleVertexIndices++;
         }
 
@@ -124,16 +133,44 @@ public class ProceduralCylinderMesh : MonoBehaviour
     {
         for (int i = 0, incrementIndices = 0; i < vertexTopList.Count - 1; i++, incrementIndices++)
         {
-            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
-            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
-            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
+            if (i >= cylinderBiteCount)
+            {
+                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
+                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
+                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
+            }
+
             triangleVertexIndices++;
 
-            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 2);
-            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
-            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
+            if (i >= cylinderBiteCount)
+            {
+                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 2);
+                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
+                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
+            }
+
             triangleVertexIndices++;
+
+            if (i == cylinderBiteCount)
+            {
+                triangleSideList.Add(triangleBottomCenterIndices);
+                triangleSideList.Add(triangleTopCenterIndices);
+                triangleSideList.Add(triangleBottomCenterIndices + 1);
+
+                triangleSideList.Add(triangleBottomCenterIndices + 1);
+                triangleSideList.Add(triangleTopCenterIndices);
+                triangleSideList.Add(triangleTopCenterIndices + 1);
+
+                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
+                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
+                triangleSideList.Add(triangleBottomCenterIndices);
+
+                triangleSideList.Add(triangleBottomCenterIndices);
+                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
+                triangleSideList.Add(triangleTopCenterIndices);
+            }
         }
+
 
         triangleList.InsertRange(triangleList.Count, triangleSideList);
     }
