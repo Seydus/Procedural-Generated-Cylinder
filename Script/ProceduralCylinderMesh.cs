@@ -5,15 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class ProceduralCylinderMesh : MonoBehaviour
 {
-    [SerializeField] private const float cylinderRadius = 3f;
-    [SerializeField] private const float cylinderHeight = 1f;
-    [SerializeField] private const float cylinderStep = 2.5f;
+    [SerializeField] private float cylinderRadius = 2f;
+    [SerializeField] private float cylinderHeight = -1f;
+    [SerializeField] private float cylinderStep = 7.5f;
 
     [SerializeField] private List<Vector3> vertexList = new List<Vector3>();
     private List<Vector3> vertexTopList = new List<Vector3>();
     private List<Vector3> vertexBottomList = new List<Vector3>();
 
-    private int triangleTopCenterIndices = 0, triangleBottomCenterIndices = 0; 
+    private int triangleTopCenterIndices = 0, triangleBottomCenterIndices = 0;
     private int triangleVertexIndices = 0;
 
     [SerializeField] private List<int> triangleList = new List<int>();
@@ -149,7 +149,7 @@ public class ProceduralCylinderMesh : MonoBehaviour
 
     private void GetCylinderUV()
     {
-        for(int i = 0; i < vertexList.Count; i++)
+        for (int i = 0; i < vertexList.Count; i++)
         {
             Vector3 uv = new Vector3(vertexList[i].x, vertexList[i].z);
             uvList.Add(uv);
@@ -158,7 +158,7 @@ public class ProceduralCylinderMesh : MonoBehaviour
 
     private void GetCylinderTangents()
     {
-        for(int i = 0; i < vertexList.Count; i++)
+        for (int i = 0; i < vertexList.Count; i++)
         {
             tangentList.Add(new Vector4(1f, 0f, 0f, -1f));
         }
@@ -166,7 +166,7 @@ public class ProceduralCylinderMesh : MonoBehaviour
 
     private void AddCollider()
     {
-        if(meshCollider != null)
+        if (meshCollider != null)
         {
             meshCollider.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation | MeshColliderCookingOptions.EnableMeshCleaning | MeshColliderCookingOptions.WeldColocatedVertices | MeshColliderCookingOptions.UseFastMidphase;
             meshCollider.convex = false;
