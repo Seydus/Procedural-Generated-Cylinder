@@ -7,7 +7,7 @@ I was too lazy to model for each platform versions and wanted to procedural gene
 
 **How to use:**
 
-You can use "CylinderMeshUpdate.cs" or "ProceduralMeshCylinder.cs" just use one of this script.
+You can use "CylinderMeshUpdate.cs" or "ProceduralMeshCylinder.cs" just use one of this script for each GameObject.
 
 **CylinderMeshUpdate.cs:** This script is a derived class of the "ProceduralMeshCylinder.cs" and gives you more access to modifying the cylinder.
 
