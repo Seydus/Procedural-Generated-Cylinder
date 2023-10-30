@@ -7,9 +7,11 @@ I was too lazy to model for each platform versions and wanted to procedural gene
 
 **How to use:**
 
-You can use "CylinderMeshUpdate.cs" or "ProceduralMeshCylinder.cs" just use one of this scripts for your needs.
-CylinderMeshUpdate.cs: This script is a derived class of the "ProceduralMeshCylinder.cs" and gives you more access to modifying the cylinder
-ProceduralMeshCylinder.cs: This is the profile of the cylinder modifying how your cylinder will look like.
+You can use "CylinderMeshUpdate.cs" or "ProceduralMeshCylinder.cs" just use one of this script.
+
+**CylinderMeshUpdate.cs:** This script is a derived class of the "ProceduralMeshCylinder.cs" and gives you more access to modifying the cylinder.
+
+**ProceduralMeshCylinder.cs:** This is the profile of the cylinder modifying how your cylinder will look like.
 
 **Example:**
 
