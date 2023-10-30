@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,22 +6,27 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class ProceduralCylinderMesh : MonoBehaviour
 {
-    [SerializeField] private float cylinderRadius = 2f;
-    [SerializeField] private float cylinderHeight = -1f;
-    [SerializeField] private float cylinderStep = 7.5f;
-    [SerializeField] private int cylinderBiteCount = 2;
+    [Header("Cylinder Profile")]
+    public float cylinderRadius = 2f;
+    public float cylinderHeight = -1f;
+    public float cylinderStep = 7.5f;
 
-    [SerializeField] private List<Vector3> vertexList = new List<Vector3>();
-    private List<Vector3> vertexTopList = new List<Vector3>();
-    private List<Vector3> vertexBottomList = new List<Vector3>();
+    protected List<Vector3> vertexList = new List<Vector3>();
 
-    private int triangleTopCenterIndices = 0, triangleBottomCenterIndices = 0;
-    private int triangleVertexIndices = 0;
+    protected List<Vector3> vertexTopList = new List<Vector3>();
+    protected List<Vector3> vertexBottomList = new List<Vector3>();
 
-    [SerializeField] private List<int> triangleList = new List<int>();
-    private List<int> triangleTopList = new List<int>();
-    private List<int> triangleSideList = new List<int>();
-    private List<int> triangleBottomList = new List<int>();
+    public int triangleTopCenterIndices { get; private set; }
+    public int triangleBottomCenterIndices { get; private set; }
+    public int triangleVertexIndices { get; set; }
+
+    protected List<int> triangleList = new List<int>();
+
+    protected List<int> triangleTopList = new List<int>();
+
+    protected List<int> triangleSideList = new List<int>();
+
+    protected List<int> triangleBottomList = new List<int>();
 
     private List<Vector3> normalList = new List<Vector3>();
     private List<Vector2> uvList = new List<Vector2>();
@@ -29,14 +35,14 @@ public class ProceduralCylinderMesh : MonoBehaviour
     private MeshFilter meshFilter = null;
     private MeshCollider meshCollider = null;
 
-    private void Awake()
+    protected void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
         CreateCylinder();
     }
 
-    private void Start()
+    protected void Start()
     {
         AddCollider();
     }
@@ -58,21 +64,21 @@ public class ProceduralCylinderMesh : MonoBehaviour
         meshFilter.mesh = SaveDataMesh(mesh);
     }
 
-    private void GetTopCenterVertex(Vector3 vertex)
+    protected void GetTopCenterVertex(Vector3 vertex)
     {
         vertexList.Insert(vertexList.Count, vertex);
         triangleTopCenterIndices = triangleList.Count > 0 ? triangleList[triangleList.Count - 1] + 1 : 0;
         triangleVertexIndices = triangleTopCenterIndices;
     }
 
-    private void GetBottomCenterVertex(Vector3 vertex)
+    protected void GetBottomCenterVertex(Vector3 vertex)
     {
         vertexList.Insert(vertexList.Count, vertex);
         triangleBottomCenterIndices = triangleList.Count > 0 ? triangleList[triangleList.Count - 1] + 1 : 0;
         triangleVertexIndices = triangleBottomCenterIndices;
     }
 
-    private void GetCylinderTop()
+    public virtual void GetCylinderTop()
     {
         GetTopCenterVertex(Vector3.zero);
 
@@ -88,12 +94,9 @@ public class ProceduralCylinderMesh : MonoBehaviour
         // The (vertexTopList.Count - 1) is outer layer vertex of a cylinder excluding the last top vertex
         for (int i = 0; i < vertexTopList.Count - 1; i++)
         {
-            if (i >= cylinderBiteCount)
-            {
-                triangleTopList.Add(triangleTopCenterIndices);
-                triangleTopList.Add(triangleVertexIndices + 1);
-                triangleTopList.Add(triangleVertexIndices + 2);
-            }
+            triangleTopList.Add(triangleTopCenterIndices);
+            triangleTopList.Add(triangleVertexIndices + 1);
+            triangleTopList.Add(triangleVertexIndices + 2);
 
             triangleVertexIndices++;
         }
@@ -101,7 +104,7 @@ public class ProceduralCylinderMesh : MonoBehaviour
         triangleList.InsertRange(triangleList.Count, triangleTopList);
     }
 
-    private void GetCylinderBottom()
+    public virtual void GetCylinderBottom()
     {
         GetBottomCenterVertex(Vector3.down);
 
@@ -116,12 +119,9 @@ public class ProceduralCylinderMesh : MonoBehaviour
 
         for (int i = 0; i < vertexBottomList.Count - 1; i++)
         {
-            if (i >= cylinderBiteCount)
-            {
-                triangleBottomList.Add(triangleBottomCenterIndices);
-                triangleBottomList.Add(triangleVertexIndices + 2);
-                triangleBottomList.Add(triangleVertexIndices + 1);
-            }
+            triangleBottomList.Add(triangleBottomCenterIndices);
+            triangleBottomList.Add(triangleVertexIndices + 2);
+            triangleBottomList.Add(triangleVertexIndices + 1);
 
             triangleVertexIndices++;
         }
@@ -129,48 +129,22 @@ public class ProceduralCylinderMesh : MonoBehaviour
         triangleList.InsertRange(triangleList.Count, triangleBottomList);
     }
 
-    private void GetCylinderSide()
+    public virtual void GetCylinderSide()
     {
         for (int i = 0, incrementIndices = 0; i < vertexTopList.Count - 1; i++, incrementIndices++)
         {
-            if (i >= cylinderBiteCount)
-            {
-                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
-                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
-                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
-            }
+            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
+            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
+            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
 
             triangleVertexIndices++;
 
-            if (i >= cylinderBiteCount)
-            {
-                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 2);
-                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
-                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
-            }
+            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 2);
+            triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 2);
+            triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
 
             triangleVertexIndices++;
-
-            if (i == cylinderBiteCount)
-            {
-                triangleSideList.Add(triangleBottomCenterIndices);
-                triangleSideList.Add(triangleTopCenterIndices);
-                triangleSideList.Add(triangleBottomCenterIndices + 1);
-
-                triangleSideList.Add(triangleBottomCenterIndices + 1);
-                triangleSideList.Add(triangleTopCenterIndices);
-                triangleSideList.Add(triangleTopCenterIndices + 1);
-
-                triangleSideList.Add((triangleBottomCenterIndices + incrementIndices) + 1);
-                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
-                triangleSideList.Add(triangleBottomCenterIndices);
-
-                triangleSideList.Add(triangleBottomCenterIndices);
-                triangleSideList.Add((triangleTopCenterIndices + incrementIndices) + 1);
-                triangleSideList.Add(triangleTopCenterIndices);
-            }
         }
-
 
         triangleList.InsertRange(triangleList.Count, triangleSideList);
     }
@@ -223,12 +197,12 @@ public class ProceduralCylinderMesh : MonoBehaviour
         return mesh;
     }
 
-    private float GetCylinderStep()
+    protected float GetCylinderStep()
     {
         return (Mathf.PI / cylinderStep);
     }
 
-    private Vector2 GetParametricEquation(float angle)
+    protected Vector2 GetParametricEquation(float angle)
     {
         return new Vector2(cylinderRadius * Mathf.Cos((Mathf.PI * 2) - angle),
                            cylinderRadius * Mathf.Sin((Mathf.PI * 2) - angle));
