@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter), typeof(MeshCollider))]
 public class ProceduralCylinderMesh : MonoBehaviour
 {
     [Header("Cylinder Profile")]
